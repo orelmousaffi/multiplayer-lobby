@@ -1,0 +1,2 @@
+#Ignore the node modules, these can be installed locally
+node_modules/*
