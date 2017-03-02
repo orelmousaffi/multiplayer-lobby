@@ -1,7 +1,18 @@
 doctype html
-html
+html(ng-app="myApp")
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    title Socket.IO Game Lobby
+
+    block css
+
+    script(type='text/javascript', src='/js/socket.io.min.js')
+    script(type='text/javascript', src='/angular/angular.min.js')
+    script(type='text/javascript', src='/angular/myApp.js')
+
   body
+    h1= title
+    hr
+
     block content
+
+  block js

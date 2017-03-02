@@ -1,5 +1,19 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div(ng-controller="lobbyCtrl", ng-init="username = '" + currentUser.username + "'")
+    h3= "Me: " + currentUser.username
+    span {{ "pairingKey: " + match }}
+    hr
+    h3= "Users"
+
+    ul
+      li(ng-repeat="user in users") {{ user.username + " - " + user.pairingKey }}
+    
+    input(type='hidden', ng-model='username')
+    p= "Subscribe to a room to chat!"
+    button(ng-click="subscribeToLobby()")= "Subscribe"
+    button(ng-click="triggerPlay()")= "Play"
+
+block js
+  script(type='text/javascript', src='/angular/lobbyCtrl.js')
