@@ -23,7 +23,12 @@ app.set('port', port);
 
 var server = http.createServer(app);
 var io = require('socket.io')(server);
-var crypto  = require('crypto');
+var socketManagement = require('../app_api/controllers/socketManagement');
+
+//Upon connection, call socket controller
+io.on("connection", function(socket) {
+  socketManagement.socketCommunications(io, socket);
+});
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -32,103 +37,6 @@ var crypto  = require('crypto');
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-/**
- * Listen on the connection event for any incoming sockets
- */
-Array.prototype.hasEmail = function(username) {
-  var valid = false;
-
-  if (this.length > 0) {
-    this.forEach(function(next) {
-      if (next.username === username) {
-        valid = true;
-        return;
-      }
-    });
-  }
-  return valid;
-};
-
-Array.prototype.removeByEmail = function(username) {
-  if (this.size > 0) {
-    this.forEach(function(next, index) {
-      if (username === next.username) {
-        this.splice(index, 1);
-        return;
-      }
-    });
-  }
-}
-
-var onlineUsers = [];
-
-function connectToUser(username)
-{
-  var opponent = onlineUsers[0];
-
-  if(typeof opponent !== 'undefined') {
-    opponent = (opponent.username !== username) ? opponent = onlineUsers.shift() : null;
-
-    return opponent;
-  }
-  return false;
-}
-
-io.on("connection", function(socket) {
-
-  console.log("A user has connected");
-
-  /*socket.on("chat", function(msg) {
-    console.log("Message from user: " + msg);
-
-    io.emit("chat", msg);
-  });*/
-
-  socket.on("subscribe", function(username) {
-
-    var opponent = connectToUser(username);
-
-    if (!opponent && !onlineUsers.hasEmail(username)) {
-        var room = crypto.randomBytes(32).toString('hex');
-        var nextUser = {
-          username: username,
-          pairingKey: room
-        }
-
-        socket.join(room);
-        onlineUsers.push(nextUser);
-    }
-    else {
-
-      if (opponent)
-      {
-        socket.join(opponent.pairingKey);
-        onlineUsers.removeByEmail(username);
-
-        io.sockets.in(opponent.pairingKey).emit('private match', {
-          message : username + " vs " + opponent.username,
-          pairingKey : opponent.pairingKey
-        });
-      }
-    }
-    io.emit("show users", onlineUsers);
-  });
-
-  socket.on("play", function (data) {
-    io.sockets.in(data.pairingKey).emit('private match', {
-      message : data.message
-    });
-  });
-
-  socket.on("show users", function() {
-    io.emit("show users", onlineUsers);
-  });
-
-  socket.on("disconnect", function() {
-    console.log("A user has disconnected")
-  });
-});
 
 /**
  * Normalize a port into a number, string, or false.
