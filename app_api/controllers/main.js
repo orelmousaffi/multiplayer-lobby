@@ -37,6 +37,11 @@ module.exports.createUser = function(req, res) {
   });
 };
 
+module.exports.connectToFriend = function(req, res) {
+  console.log(req.body.pairingKey);
+  sendJSONresponse(res, 201, { success: "it worked" });
+}
+
 module.exports.loginUser = function(req, res) {
   passport.authenticate('local')(req, res, function () {
     res.redirect('/');

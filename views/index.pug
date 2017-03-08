@@ -1,18 +1,31 @@
 extends layout
 
 block content
-  div(ng-controller="lobbyCtrl", ng-init="username = '" + currentUser.username + "'")
+  div(ng-controller="lobbyCtrl", ng-init="init('" + currentUser.username + "')")
     h3= "Me: " + currentUser.username
     span {{ "pairingKey: " + match }}
     hr
-    h3= "Users"
+    h3= "Users Online"
+
 
     ul
-      li(ng-repeat="user in users") {{ user.username + " - " + user.pairingKey }}
-    
+      li(ng-repeat="oUser in onlineUsers | filter:{username: '!' + username}")
+        a(href, ng-click="connectToFriend($event, oUser)") {{ oUser.username }}
+    br
+
+    h3= "Users looking for ranked matches"
+    ul
+      li(ng-repeat="rUser in rankedUsers") {{ rUser.username + " - " + rUser.pairingKey }}
+    br
+
+    h3= "Friend requests"
+      ul
+        li(ng-repeat="friend in friendRequests")
+          a(href, ng-click="acceptFriend(friend)") {{ friend.username }}
+
     input(type='hidden', ng-model='username')
-    p= "Subscribe to a room to chat!"
-    button(ng-click="subscribeToLobby()")= "Subscribe"
+    hr
+    button(ng-click="subscribeToLobby()")= "Search for Ranked Match"
     button(ng-click="triggerPlay()")= "Play"
 
 block js

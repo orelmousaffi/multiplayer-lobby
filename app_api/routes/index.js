@@ -10,6 +10,7 @@ router.get('/', apiCtrl.apiHome);
 router.get('/create', apiCtrl.createUser);
 
 //POST Requests
+router.post('/connectToFriend', apiCtrl.connectToFriend);
 router.post('/login', apiCtrl.loginUser);
 
 module.exports = router;
